@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 📚 StudyTrack — Student Task Manager
 
 > Web Development Midterm Project | 2025
@@ -270,3 +271,6 @@ If this project were to be developed further:
 
 *StudyTrack — Web Development Midterm Project | 2025*
 *Built with HTML5, CSS3, and Vanilla JavaScript*
+=======
+# my-project
+>>>>>>> cb0effdd29c35941292eda50b18ad3c5ec1730f6
