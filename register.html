@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — StudyTrack</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-body">
+
+  <div class="auth-wrapper">
+
+    <!-- Left Panel — Branding -->
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="auth-logo">
+          <span class="auth-logo-icon">📚</span>
+          <span class="auth-logo-text">StudyTrack</span>
+        </div>
+        <h2 class="auth-tagline">Start your organized<br/>student journey today.</h2>
+        <p class="auth-sub">Create your free account and take control of your academic tasks.</p>
+        <div class="auth-features">
+          <div class="auth-feature-item">
+            <span class="auth-feature-icon">🚀</span>
+            <span>Free &amp; easy to get started</span>
+          </div>
+          <div class="auth-feature-item">
+            <span class="auth-feature-icon">📋</span>
+            <span>Organize by subject &amp; priority</span>
+          </div>
+          <div class="auth-feature-item">
+            <span class="auth-feature-icon">🔔</span>
+            <span>Never miss a deadline again</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel — Register Form -->
+    <div class="auth-right">
+      <div class="auth-card">
+
+        <div class="auth-card-header">
+          <div class="auth-logo-mobile">
+            <span class="auth-logo-icon">📚</span>
+            <span class="auth-logo-text">StudyTrack</span>
+          </div>
+          <h1 class="auth-title">Create Account</h1>
+          <p class="auth-desc">Fill in your details to get started</p>
+        </div>
+
+        <!-- Alert Box -->
+        <div class="auth-alert auth-alert-error" id="registerError" style="display:none;"></div>
+
+        <form class="auth-form" id="registerForm" novalidate>
+
+          <div class="form-group">
+            <label for="regFullName" class="form-label">Full Name <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">✏️</span>
+              <input
+                type="text"
+                id="regFullName"
+                class="form-input"
+                placeholder="e.g. Ali Hassan"
+                maxlength="60"
+                autocomplete="name"
+              />
+            </div>
+            <span class="error-msg" id="regFullNameError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="regUsername" class="form-label">Username <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input
+                type="text"
+                id="regUsername"
+                class="form-input"
+                placeholder="Choose a username"
+                maxlength="30"
+                autocomplete="username"
+              />
+            </div>
+            <span class="error-msg" id="regUsernameError"></span>
+            <span class="form-hint">Letters, numbers and underscores only. No spaces.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="regPassword" class="form-label">Password <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                type="password"
+                id="regPassword"
+                class="form-input"
+                placeholder="Create a password (min. 6 characters)"
+                maxlength="50"
+                autocomplete="new-password"
+              />
+              <button type="button" class="toggle-password" id="toggleRegPassword" aria-label="Show or hide password">
+                <span id="regPassIcon">👁️</span>
+              </button>
+            </div>
+            <span class="error-msg" id="regPasswordError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="regConfirmPassword" class="form-label">Confirm Password <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                type="password"
+                id="regConfirmPassword"
+                class="form-input"
+                placeholder="Re-enter your password"
+                maxlength="50"
+                autocomplete="new-password"
+              />
+              <button type="button" class="toggle-password" id="toggleRegConfirmPassword" aria-label="Show or hide password">
+                <span id="regConfirmPassIcon">👁️</span>
+              </button>
+            </div>
+            <span class="error-msg" id="regConfirmPasswordError"></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" id="registerBtn">
+            Create Account
+          </button>
+
+        </form>
+
+        <div class="auth-divider">
+          <span>Already have an account?</span>
+        </div>
+
+        <a href="login.html" class="btn btn-outline btn-full">
+          Sign In Instead
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      // If already logged in, redirect
+      var session = localStorage.getItem("studytrack_session");
+      if (session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      // Toggle password visibility for Password field
+      document.getElementById("toggleRegPassword").addEventListener("click", function () {
+        var input = document.getElementById("regPassword");
+        var icon = document.getElementById("regPassIcon");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.textContent = "🙈";
+        } else {
+          input.type = "password";
+          icon.textContent = "👁️";
+        }
+      });
+
+      // Toggle password visibility for Confirm Password field
+      document.getElementById("toggleRegConfirmPassword").addEventListener("click", function () {
+        var input = document.getElementById("regConfirmPassword");
+        var icon = document.getElementById("regConfirmPassIcon");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.textContent = "🙈";
+        } else {
+          input.type = "password";
+          icon.textContent = "👁️";
+        }
+      });
+
+      // Handle form submission
+      document.getElementById("registerForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        handleRegister();
+      });
+
+      // Live inline validation: clear error when user starts typing
+      ["regFullName", "regUsername", "regPassword", "regConfirmPassword"].forEach(function (id) {
+        document.getElementById(id).addEventListener("input", function () {
+          this.classList.remove("input-error");
+          var errorId = id + "Error";
+          var errorEl = document.getElementById(errorId);
+          if (errorEl) errorEl.textContent = "";
+        });
+      });
+
+    });
+
+    function handleRegister() {
+      var fullName = document.getElementById("regFullName").value.trim();
+      var username = document.getElementById("regUsername").value.trim();
+      var password = document.getElementById("regPassword").value;
+      var confirmPassword = document.getElementById("regConfirmPassword").value;
+      var errorBox = document.getElementById("registerError");
+
+      // Clear previous alerts
+      errorBox.style.display = "none";
+      clearAuthErrors(
+        ["regFullName", "regUsername", "regPassword", "regConfirmPassword"],
+        ["regFullNameError", "regUsernameError", "regPasswordError", "regConfirmPasswordError"]
+      );
+
+      var valid = true;
+
+      // Full Name validation
+      if (!fullName) {
+        showAuthFieldError("regFullName", "regFullNameError", "Full name is required.");
+        valid = false;
+      } else if (fullName.length < 2) {
+        showAuthFieldError("regFullName", "regFullNameError", "Name must be at least 2 characters.");
+        valid = false;
+      }
+
+      // Username validation
+      if (!username) {
+        showAuthFieldError("regUsername", "regUsernameError", "Username is required.");
+        valid = false;
+      } else if (username.length < 3) {
+        showAuthFieldError("regUsername", "regUsernameError", "Username must be at least 3 characters.");
+        valid = false;
+      } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        showAuthFieldError("regUsername", "regUsernameError", "Only letters, numbers, and underscores allowed.");
+        valid = false;
+      }
+
+      // Password validation
+      if (!password) {
+        showAuthFieldError("regPassword", "regPasswordError", "Password is required.");
+        valid = false;
+      } else if (password.length < 6) {
+        showAuthFieldError("regPassword", "regPasswordError", "Password must be at least 6 characters.");
+        valid = false;
+      }
+
+      // Confirm Password validation
+      if (!confirmPassword) {
+        showAuthFieldError("regConfirmPassword", "regConfirmPasswordError", "Please confirm your password.");
+        valid = false;
+      } else if (password && confirmPassword && password !== confirmPassword) {
+        showAuthFieldError("regConfirmPassword", "regConfirmPasswordError", "Passwords do not match.");
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      // Try to register
+      var result = registerUser(fullName, username, password);
+
+      if (result.success) {
+        // Signal to login page that registration just happened
+        sessionStorage.setItem("justRegistered", "true");
+        window.location.href = "login.html";
+      } else {
+        errorBox.textContent = result.message;
+        errorBox.style.display = "block";
+      }
+    }
+  </script>
+
+</body>
+</html>

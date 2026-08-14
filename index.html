@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — StudyTrack</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="app-body">
+
+  <!-- ===== MOBILE TOP BAR ===== -->
+  <div class="mobile-topbar">
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-logo">
+      <span class="auth-logo-icon">📚</span>
+      <span class="auth-logo-text">StudyTrack</span>
+    </div>
+    <button class="btn btn-sm btn-ghost" id="mobileLogoutBtn">Logout</button>
+  </div>
+
+  <!-- ===== SIDEBAR OVERLAY (mobile) ===== -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ===== APP SHELL (CSS Grid: sidebar + main) ===== -->
+  <div class="app-shell" id="appShell">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <span class="auth-logo-icon">📚</span>
+        <span class="auth-logo-text">StudyTrack</span>
+      </div>
+
+      <!-- User info mini card -->
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name" id="sidebarUserName">Loading...</span>
+          <span class="sidebar-user-handle" id="sidebarUserHandle">@username</span>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link active" data-section="dashboard" id="navDashboard">
+          <span class="sidebar-link-icon">🏠</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="sidebar-link" data-section="tasks" id="navTasks">
+          <span class="sidebar-link-icon">📋</span>
+          <span>My Tasks</span>
+        </a>
+        <a href="#" class="sidebar-link" data-section="add" id="navAdd">
+          <span class="sidebar-link-icon">➕</span>
+          <span>Add Task</span>
+        </a>
+        <a href="#" class="sidebar-link" data-section="profile" id="navProfile">
+          <span class="sidebar-link-icon">👤</span>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Logout -->
+      <div class="sidebar-footer">
+        <button class="sidebar-logout-btn" id="sidebarLogoutBtn">
+          <span>🚪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ===== MAIN CONTENT AREA ===== -->
+    <div class="main-area">
+
+      <!-- TOP HEADER BAR -->
+      <header class="app-header">
+        <div class="app-header-left">
+          <h1 class="app-header-title" id="headerTitle">Dashboard</h1>
+          <span class="app-header-date" id="headerDate"></span>
+        </div>
+        <div class="app-header-right">
+          <span class="header-welcome" id="headerWelcome">Welcome!</span>
+          <button class="btn btn-sm btn-outline" id="headerLogoutBtn">Logout</button>
+        </div>
+      </header>
+
+      <!-- ===== SECTIONS ===== -->
+
+      <!-- SECTION: DASHBOARD -->
+      <section class="content-section active" id="sectionDashboard">
+        <div class="section-inner">
+
+          <!-- Welcome Banner -->
+          <div class="welcome-banner" id="welcomeBanner">
+            <div class="welcome-text">
+              <h2 class="welcome-heading" id="welcomeHeading">Good morning! 👋</h2>
+              <p class="welcome-sub" id="welcomeSub">Here's your study overview for today.</p>
+            </div>
+            <div class="welcome-emoji">🎓</div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card stat-total">
+              <div class="stat-icon-wrap">📋</div>
+              <div class="stat-body">
+                <span class="stat-number" id="totalCount">0</span>
+                <span class="stat-label">Total Tasks</span>
+              </div>
+            </div>
+            <div class="stat-card stat-pending">
+              <div class="stat-icon-wrap">⏳</div>
+              <div class="stat-body">
+                <span class="stat-number" id="pendingCount">0</span>
+                <span class="stat-label">Pending</span>
+              </div>
+            </div>
+            <div class="stat-card stat-completed">
+              <div class="stat-icon-wrap">✅</div>
+              <div class="stat-body">
+                <span class="stat-number" id="completedCount">0</span>
+                <span class="stat-label">Completed</span>
+              </div>
+            </div>
+            <div class="stat-card stat-due">
+              <div class="stat-icon-wrap">🔔</div>
+              <div class="stat-body">
+                <span class="stat-number" id="dueSoonCount">0</span>
+                <span class="stat-label">Due Soon</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-section">
+            <div class="progress-header">
+              <span class="progress-label">Overall Progress</span>
+              <span class="progress-percent" id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Recent Tasks Preview (on dashboard) -->
+          <div class="dashboard-tasks-preview">
+            <div class="section-subheader">
+              <h3 class="subsection-title">Recent Tasks</h3>
+              <a href="#" class="view-all-link" data-section="tasks">View All →</a>
+            </div>
+            <div class="tasks-preview-list" id="tasksPreviewList"></div>
+            <div class="empty-state" id="dashboardEmpty" style="display:none;">
+              <span class="empty-icon">📝</span>
+              <h3 class="empty-title">No tasks yet</h3>
+              <p class="empty-message">Add your first task to get started!</p>
+              <button class="btn btn-primary" id="dashEmptyAddBtn">+ Add Task</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION: MY TASKS -->
+      <section class="content-section" id="sectionTasks">
+        <div class="section-inner">
+
+          <!-- Controls -->
+          <div class="controls-card">
+            <div class="search-wrapper">
+              <span class="search-icon-abs">🔍</span>
+              <input type="text" id="searchInput" class="search-input" placeholder="Search by title, subject..." />
+            </div>
+            <div class="filter-row">
+              <div class="filter-item">
+                <label class="filter-label" for="filterStatus">Status</label>
+                <select id="filterStatus" class="filter-select">
+                  <option value="all">All</option>
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              <div class="filter-item">
+                <label class="filter-label" for="filterPriority">Priority</label>
+                <select id="filterPriority" class="filter-select">
+                  <option value="all">All</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+              <div class="filter-item">
+                <label class="filter-label" for="sortOrder">Sort By</label>
+                <select id="sortOrder" class="filter-select">
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="dueDate">Due Date</option>
+                  <option value="priority">Priority</option>
+                </select>
+              </div>
+              <button class="btn btn-sm btn-outline" id="clearFiltersBtn">Clear</button>
+            </div>
+          </div>
+
+          <!-- Task Count Label -->
+          <div class="tasks-header-row">
+            <h3 class="subsection-title">My Tasks</h3>
+            <div class="tasks-header-right">
+              <span class="tasks-count-label" id="tasksCountLabel">0 tasks</span>
+              <button class="btn btn-sm btn-primary" id="tasksAddBtn">+ Add Task</button>
+            </div>
+          </div>
+
+          <!-- Tasks Grid -->
+          <div class="tasks-grid" id="tasksGrid"></div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="tasksEmpty" style="display:none;">
+            <span class="empty-icon">🔍</span>
+            <h3 class="empty-title">No tasks found</h3>
+            <p class="empty-message">Try different search terms or filters, or add a new task.</p>
+            <button class="btn btn-primary" id="tasksEmptyAddBtn">+ Add Task</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION: ADD TASK (inline panel, not a modal) -->
+      <section class="content-section" id="sectionAdd">
+        <div class="section-inner">
+          <div class="form-page-card">
+            <div class="form-page-header">
+              <h2 class="form-page-title">Add New Task</h2>
+              <p class="form-page-desc">Fill in the details below to add a task to your list.</p>
+            </div>
+
+            <div class="auth-alert auth-alert-success" id="addTaskSuccess" style="display:none;"></div>
+
+            <form id="addTaskForm" class="task-form" novalidate>
+
+              <div class="form-grid-two">
+                <div class="form-group">
+                  <label for="taskTitle" class="form-label">Task Title <span class="required">*</span></label>
+                  <input type="text" id="taskTitle" class="form-input" placeholder="e.g. Complete Math Assignment" maxlength="100" />
+                  <span class="error-msg" id="titleError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="taskSubject" class="form-label">Subject <span class="required">*</span></label>
+                  <input type="text" id="taskSubject" class="form-input" placeholder="e.g. Mathematics" maxlength="60" />
+                  <span class="error-msg" id="subjectError"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="taskDescription" class="form-label">Description</label>
+                <textarea id="taskDescription" class="form-textarea" rows="3" placeholder="Short description (optional)..." maxlength="300"></textarea>
+              </div>
+
+              <div class="form-grid-two">
+                <div class="form-group">
+                  <label for="taskDueDate" class="form-label">Due Date <span class="required">*</span></label>
+                  <input type="date" id="taskDueDate" class="form-input" />
+                  <span class="error-msg" id="dueDateError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="taskPriority" class="form-label">Priority</label>
+                  <select id="taskPriority" class="form-input form-select">
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-actions-row">
+                <button type="button" class="btn btn-outline" id="addTaskCancelBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="addTaskSubmitBtn">Add Task</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: PROFILE -->
+      <section class="content-section" id="sectionProfile">
+        <div class="section-inner">
+          <div class="profile-card">
+
+            <div class="profile-avatar-area">
+              <div class="profile-avatar" id="profileAvatar">?</div>
+              <div class="profile-name-area">
+                <h2 class="profile-name" id="profileFullName">—</h2>
+                <span class="profile-username" id="profileUsername">@—</span>
+              </div>
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <div class="profile-stats-grid">
+              <div class="profile-stat">
+                <span class="profile-stat-number" id="profileTotal">0</span>
+                <span class="profile-stat-label">Total Tasks</span>
+              </div>
+              <div class="profile-stat">
+                <span class="profile-stat-number profile-stat-completed" id="profileCompleted">0</span>
+                <span class="profile-stat-label">Completed</span>
+              </div>
+              <div class="profile-stat">
+                <span class="profile-stat-number profile-stat-pending" id="profilePending">0</span>
+                <span class="profile-stat-label">Pending</span>
+              </div>
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <div class="profile-info-section">
+              <h3 class="profile-section-label">Account Info</h3>
+              <div class="profile-info-row">
+                <span class="profile-info-key">Full Name</span>
+                <span class="profile-info-val" id="profileInfoName">—</span>
+              </div>
+              <div class="profile-info-row">
+                <span class="profile-info-key">Username</span>
+                <span class="profile-info-val" id="profileInfoUsername">—</span>
+              </div>
+              <div class="profile-info-row">
+                <span class="profile-info-key">Member Since</span>
+                <span class="profile-info-val" id="profileInfoDate">—</span>
+              </div>
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <div class="profile-note">
+              <span class="profile-note-icon">🔒</span>
+              <span>This is a demo account stored in your browser's localStorage. No data is shared with any server.</span>
+            </div>
+
+            <button class="btn btn-danger btn-full profile-logout-btn" id="profileLogoutBtn">
+              🚪 Logout
+            </button>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ===== EDIT TASK MODAL ===== -->
+  <div class="modal-overlay" id="editModalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+      <div class="modal-header">
+        <h2 class="modal-title" id="editModalTitle">Edit Task</h2>
+        <button class="modal-close" id="closeEditModal" aria-label="Close">&times;</button>
+      </div>
+      <form class="modal-form" id="editTaskForm" novalidate>
+
+        <div class="form-group">
+          <label for="editTaskTitle" class="form-label">Task Title <span class="required">*</span></label>
+          <input type="text" id="editTaskTitle" class="form-input" maxlength="100" />
+          <span class="error-msg" id="editTitleError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="editTaskSubject" class="form-label">Subject <span class="required">*</span></label>
+          <input type="text" id="editTaskSubject" class="form-input" maxlength="60" />
+          <span class="error-msg" id="editSubjectError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="editTaskDescription" class="form-label">Description</label>
+          <textarea id="editTaskDescription" class="form-textarea" rows="3" maxlength="300"></textarea>
+        </div>
+
+        <div class="form-grid-two">
+          <div class="form-group">
+            <label for="editTaskDueDate" class="form-label">Due Date <span class="required">*</span></label>
+            <input type="date" id="editTaskDueDate" class="form-input" />
+            <span class="error-msg" id="editDueDateError"></span>
+          </div>
+          <div class="form-group">
+            <label for="editTaskPriority" class="form-label">Priority</label>
+            <select id="editTaskPriority" class="form-input form-select">
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+
+        <input type="hidden" id="editingTaskId" />
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="cancelEditBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== DELETE CONFIRM MODAL ===== -->
+  <div class="modal-overlay" id="deleteModalOverlay">
+    <div class="modal confirm-modal" role="dialog" aria-modal="true">
+      <div class="confirm-icon-wrap">🗑️</div>
+      <h3 class="confirm-title">Delete Task?</h3>
+      <p class="confirm-msg">This action cannot be undone. The task will be permanently removed.</p>
+      <div class="form-actions">
+        <button class="btn btn-outline" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div class="toast" id="toast"></div>
+
+  <script src="auth.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
