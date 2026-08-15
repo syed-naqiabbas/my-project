@@ -23,7 +23,7 @@
 
 </div>
 
-<h1> 🚀 About The Project </h1>
+<h1> About The Project </h1>
 
 StudyTrack is a browser-based student productivity application designed to make academic task management simple, organized, and visual.
 
