@@ -327,7 +327,7 @@ The interface includes a responsive sidebar, mobile navigation drawer, flexible 
 
 1. Clone
 
-git clone https://github.com/your-username/studytrack.git
+git clone https://my-project-syed-naqi.vercel.app/
 cd studytrack
 
 2. Open
