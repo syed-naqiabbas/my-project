@@ -1,763 +1,2798 @@
-o<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+  <meta name="description" content="StudyTrack — A simple student task manager.">
+  <meta name="theme-color" content="#f5f1e8">
 
-  <meta
-    name="description"
-    content="StudyTrack — Plan your term, track assignments, and stay organized."
-  />
+  <title>StudyTrack — Student Task Manager</title>
 
-  <meta
-    name="theme-color"
-    content="#f4f0e8"
-  />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <title>StudyTrack — Plan your term, one task at a time</title>
-
-  <!-- Preconnect -->
-  <link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
-  />
-
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  />
-
-  <!-- Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet"
-  />
+  >
 
-  <!-- Stylesheet -->
-  <link
-    rel="stylesheet"
-    href="style.css"
-  />
+  <style>
+    /* =====================================================
+       RESET
+    ===================================================== */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Inter", sans-serif;
+      color: #292823;
+      background: #f5f1e8;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =====================================================
+       AUTH PAGE
+    ===================================================== */
+
+    .auth-page {
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      background: #f5f1e8;
+    }
+
+    .background-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .35;
+      background-image:
+        linear-gradient(rgba(60,55,45,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(60,55,45,.035) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .auth-wrapper {
+      position: relative;
+      z-index: 2;
+
+      width: min(1180px, calc(100% - 70px));
+      min-height: 100vh;
+
+      margin: auto;
+
+      display: grid;
+      grid-template-columns: 1.1fr .8fr;
+      align-items: center;
+
+      gap: 90px;
+
+      padding: 55px 0;
+    }
+
+    /* =====================================================
+       LEFT SIDE
+    ===================================================== */
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      margin-bottom: 48px;
+    }
+
+    .brand-icon {
+      font-size: 25px;
+    }
+
+    .brand-name {
+      font-family: "Fraunces", serif;
+      font-size: 27px;
+      font-weight: 700;
+    }
+
+    .hero-title {
+      max-width: 650px;
+
+      font-family:
+        "Keratos",
+        "Keratos Display",
+        "Fraunces",
+        Georgia,
+        serif;
+
+      font-size: clamp(58px, 6vw, 82px);
+      line-height: .95;
+      letter-spacing: -3px;
+      font-weight: 500;
+
+      margin-bottom: 28px;
+    }
+
+    .hero-title span {
+      color: #a95335;
+    }
+
+    .hero-description {
+      max-width: 510px;
+
+      color: #68645b;
+
+      font-size: 15px;
+      line-height: 1.75;
+
+      margin-bottom: 35px;
+    }
+
+    .feature-list {
+      list-style: none;
+
+      display: grid;
+      gap: 14px;
+
+      max-width: 500px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .feature-number {
+      color: #a95335;
+
+      font-family: "JetBrains Mono", monospace;
+
+      font-size: 10px;
+    }
+
+    .stats {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+
+      margin-top: 48px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .stat-number {
+      font-family: "Fraunces", serif;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      color: #858076;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 38px;
+      background: #d9d2c5;
+    }
+
+    /* =====================================================
+       AUTH CARD
+    ===================================================== */
+
+    .auth-section {
+      width: 100%;
+      max-width: 430px;
+      justify-self: end;
+    }
+
+    .auth-card {
+      background: #fffdf8;
+
+      border: 1px solid #d9d2c5;
+      border-radius: 8px;
+
+      padding: 34px 35px;
+
+      box-shadow:
+        0 14px 35px rgba(48,43,34,.09);
+    }
+
+    .tabs {
+      position: relative;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      border-bottom: 1px solid #d9d2c5;
+
+      margin-bottom: 32px;
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+
+      padding: 12px 5px 16px;
+
+      color: #858076;
+
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tab.active {
+      color: #292823;
+    }
+
+    .tab-line {
+      position: absolute;
+
+      left: 0;
+      bottom: -1px;
+
+      width: 50%;
+      height: 2px;
+
+      background: #a95335;
+
+      transition: transform .2s ease;
+    }
+
+    /* =====================================================
+       FORMS
+    ===================================================== */
+
+    .form {
+      display: none;
+    }
+
+    .form.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .input {
+      width: 100%;
+      height: 47px;
+
+      padding: 0 13px;
+
+      border: 1px solid #d9d2c5;
+      border-radius: 5px;
+
+      outline: none;
+
+      background: white;
+      color: #292823;
+
+      font-size: 13px;
+
+      transition: .2s;
+    }
+
+    .input:focus {
+      border-color: #a95335;
+
+      box-shadow:
+        0 0 0 3px rgba(169,83,53,.08);
+    }
+
+    .input.error {
+      border-color: #a94743;
+    }
+
+    .password-box {
+      position: relative;
+    }
+
+    .password-box .input {
+      padding-right: 48px;
+    }
+
+    .password-toggle {
+      position: absolute;
+
+      top: 50%;
+      right: 5px;
+
+      transform: translateY(-50%);
+
+      width: 36px;
+      height: 36px;
+
+      border: 0;
+      background: transparent;
+
+      border-radius: 4px;
+    }
+
+    .password-toggle:hover {
+      background: #f5f1e8;
+    }
+
+    .error-text {
+      min-height: 14px;
+
+      display: block;
+
+      margin-top: 4px;
+
+      color: #a94743;
+
+      font-size: 9px;
+    }
+
+    .alert {
+      display: none;
+
+      padding: 11px 12px;
+
+      margin-bottom: 16px;
+
+      border: 1px solid #e9c6c2;
+      border-radius: 5px;
+
+      background: #fff2f1;
+
+      color: #a94743;
+
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    /* =====================================================
+       REMEMBER
+    ===================================================== */
+
+    .remember {
+      display: flex;
+      align-items: center;
+
+      gap: 8px;
+
+      margin: 3px 0 20px;
+
+      color: #858076;
+
+      font-size: 10px;
+
+      cursor: pointer;
+    }
+
+    .remember input {
+      accent-color: #a95335;
+    }
+
+    /* =====================================================
+       BUTTON
+    ===================================================== */
+
+    .primary-button {
+      width: 100%;
+      min-height: 48px;
+
+      border: 0;
+      border-radius: 5px;
+
+      background: #a95335;
+      color: white;
+
+      font-size: 12px;
+      font-weight: 700;
+
+      transition: .2s;
+    }
+
+    .primary-button:hover {
+      background: #884029;
+      transform: translateY(-1px);
+    }
+
+    .primary-button:active {
+      transform: translateY(0);
+    }
+
+    /* =====================================================
+       SWITCH
+    ===================================================== */
+
+    .switch-text {
+      margin-top: 18px;
+
+      text-align: center;
+
+      color: #858076;
+
+      font-size: 10px;
+    }
+
+    .switch-link {
+      border: 0;
+      background: transparent;
+
+      color: #a95335;
+
+      font-size: inherit;
+      font-weight: 700;
+    }
+
+    .demo-box {
+      display: flex;
+      gap: 8px;
+
+      margin-top: 17px;
+
+      padding: 11px 12px;
+
+      border: 1px solid #e5ded1;
+      border-radius: 5px;
+
+      background: #f4f0e8;
+
+      color: #858076;
+
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .demo-button {
+      border: 0;
+      background: transparent;
+
+      color: #a95335;
+
+      font-size: inherit;
+      font-weight: 700;
+    }
+
+    /* =====================================================
+       PASSWORD STRENGTH
+    ===================================================== */
+
+    .strength {
+      margin-top: 5px;
+    }
+
+    .strength-track {
+      height: 3px;
+
+      overflow: hidden;
+
+      background: #e4dfd5;
+
+      border-radius: 10px;
+    }
+
+    .strength-fill {
+      width: 0;
+      height: 100%;
+
+      background: #a95335;
+
+      transition: width .2s ease;
+    }
+
+    .strength-label {
+      display: block;
+
+      min-height: 11px;
+
+      margin-top: 3px;
+
+      color: #858076;
+
+      font-size: 8px;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .footnote {
+      margin-top: 14px;
+
+      color: #858076;
+
+      font-size: 8px;
+      line-height: 1.5;
+
+      text-align: center;
+    }
+
+    /* =====================================================
+       DASHBOARD
+    ===================================================== */
+
+    .dashboard-page {
+      display: none;
+
+      min-height: 100vh;
+
+      background: #f5f1e8;
+    }
+
+    .dashboard-page.active {
+      display: block;
+    }
+
+    .dashboard-container {
+      width: min(1100px, calc(100% - 40px));
+
+      margin: auto;
+
+      padding: 35px 0 60px;
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding-bottom: 25px;
+
+      border-bottom: 1px solid #d9d2c5;
+    }
+
+    .dashboard-brand {
+      font-family: "Fraunces", serif;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .dashboard-user {
+      color: #858076;
+      font-size: 12px;
+    }
+
+    .logout-button {
+      margin-left: 12px;
+
+      padding: 9px 13px;
+
+      border: 1px solid #d9d2c5;
+      border-radius: 5px;
+
+      background: #fffdf8;
+
+      color: #292823;
+
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .logout-button:hover {
+      border-color: #a95335;
+      color: #a95335;
+    }
+
+    .dashboard-intro {
+      padding: 45px 0 30px;
+    }
+
+    .dashboard-intro h1 {
+      font-family: "Fraunces", serif;
+
+      font-size: clamp(38px, 5vw, 60px);
+
+      line-height: 1;
+
+      margin-bottom: 10px;
+    }
+
+    .dashboard-intro p {
+      color: #858076;
+      font-size: 13px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+
+      grid-template-columns:
+        1fr
+        330px;
+
+      gap: 25px;
+    }
+
+    .panel {
+      background: #fffdf8;
+
+      border: 1px solid #d9d2c5;
+      border-radius: 7px;
+
+      padding: 25px;
+    }
+
+    .panel-title {
+      font-family: "Fraunces", serif;
+
+      font-size: 23px;
+
+      margin-bottom: 20px;
+    }
+
+    .task-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .task-form input,
+    .task-form select {
+      width: 100%;
+      height: 43px;
+
+      padding: 0 11px;
+
+      border: 1px solid #d9d2c5;
+      border-radius: 5px;
+
+      outline: none;
+
+      background: white;
+
+      font-size: 12px;
+    }
+
+    .task-form input:focus,
+    .task-form select:focus {
+      border-color: #a95335;
+    }
+
+    .task-add {
+      height: 44px;
+
+      border: 0;
+      border-radius: 5px;
+
+      background: #a95335;
+      color: white;
+
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .task-add:hover {
+      background: #884029;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task-card {
+      display: grid;
+
+      grid-template-columns: 30px 1fr auto 25px;
+
+      align-items: center;
+
+      gap: 12px;
+
+      padding: 14px;
+
+      border: 1px solid #e1dbd0;
+      border-radius: 5px;
+
+      background: #fff;
+    }
+
+    .task-check {
+      width: 23px;
+      height: 23px;
+
+      border: 1px solid #cfc7ba;
+      border-radius: 4px;
+
+      background: white;
+
+      color: white;
+
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .task-completed .task-check {
+      background: #52705a;
+      border-color: #52705a;
+    }
+
+    .task-content h3 {
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .task-completed .task-content h3 {
+      text-decoration: line-through;
+      color: #969187;
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      color: #858076;
+
+      font-size: 9px;
+    }
+
+    .priority {
+      padding: 4px 7px;
+
+      border-radius: 3px;
+
+      font-size: 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .priority-high {
+      background: #fff0ee;
+      color: #a94743;
+    }
+
+    .priority-medium {
+      background: #f7f1e3;
+      color: #987331;
+    }
+
+    .priority-low {
+      background: #edf4ee;
+      color: #52705a;
+    }
+
+    .delete-task {
+      border: 0;
+      background: transparent;
+
+      color: #aaa39a;
+
+      font-size: 19px;
+    }
+
+    .delete-task:hover {
+      color: #a94743;
+    }
+
+    .empty-state {
+      padding: 35px 10px;
+
+      color: #858076;
+
+      text-align: center;
+
+      font-size: 11px;
+    }
+
+    .stats-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 10px;
+
+      margin-top: 20px;
+    }
+
+    .dashboard-stat {
+      padding: 15px;
+
+      border: 1px solid #e1dbd0;
+      border-radius: 5px;
+
+      background: #faf7f0;
+    }
+
+    .dashboard-stat strong {
+      display: block;
+
+      font-family: "Fraunces", serif;
+
+      font-size: 25px;
+
+      margin-bottom: 4px;
+    }
+
+    .dashboard-stat span {
+      color: #858076;
+
+      font-size: 8px;
+
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 900px) {
+
+      .auth-wrapper {
+        width: min(92%, 560px);
+
+        grid-template-columns: 1fr;
+
+        gap: 35px;
+
+        padding: 40px 0;
+      }
+
+      .auth-section {
+        max-width: 100%;
+      }
+
+      .hero-title {
+        font-size: 58px;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      .auth-wrapper {
+        width: calc(100% - 30px);
+        padding: 28px 0;
+      }
+
+      .hero-title {
+        font-size: clamp(44px, 13vw, 58px);
+        letter-spacing: -2px;
+      }
+
+      .hero-description {
+        font-size: 13px;
+      }
+
+      .auth-card {
+        padding: 25px 20px;
+      }
+
+      .two-columns {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .dashboard-container {
+        width: calc(100% - 30px);
+      }
+
+      .dashboard-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .logout-button {
+        margin-left: 0;
+      }
+
+      .task-card {
+        grid-template-columns: 28px 1fr 24px;
+      }
+
+      .task-card .priority {
+        display: none;
+      }
+    }
+
+  </style>
 </head>
 
-<body class="auth-body">
+<body>
 
-  <!-- =========================================
-       BACKGROUND
-  ========================================== -->
+  <!-- =====================================================
+       AUTH PAGE
+  ====================================================== -->
 
-  <div
-    class="auth-backdrop"
-    aria-hidden="true"
-  >
-    <div class="grain-layer"></div>
+  <section class="auth-page" id="authPage">
 
-    <div class="ring ring-a"></div>
-    <div class="ring ring-b"></div>
-  </div>
+    <div class="background-grid"></div>
 
+    <main class="auth-wrapper">
 
-  <!-- =========================================
-       MAIN AUTHENTICATION LAYOUT
-  ========================================== -->
+      <!-- LEFT -->
+      <section>
 
-  <main class="auth-shell">
-
-
-    <!-- =======================================
-         LEFT SIDE — BRAND / INTRODUCTION
-    ======================================== -->
-
-    <section
-      class="auth-pitch"
-      aria-label="About StudyTrack"
-    >
-
-      <div class="auth-pitch-inner">
-
-        <!-- Brand -->
-        <div class="auth-logo">
-
-          <span
-            class="auth-logo-icon"
-            aria-hidden="true"
-          >
-            📚
-          </span>
-
-          <span class="auth-logo-text">
-            StudyTrack
-          </span>
-
+        <div class="brand">
+          <span class="brand-icon">📚</span>
+          <span class="brand-name">StudyTrack</span>
         </div>
 
-
-        <!-- Main Heading -->
-        <h1 class="pitch-headline">
-
-          Every assignment,<br />
-
-          <span class="pitch-highlight">
-            accounted for.
-          </span>
-
+        <h1 class="hero-title">
+          Every assignment,
+          <br>
+          <span>accounted for.</span>
         </h1>
 
-
-        <!-- Description -->
-        <p class="pitch-sub">
-          A calm, simple workspace for students.
-          Keep track of assignments, deadlines,
-          priorities, and progress — all in one place.
+        <p class="hero-description">
+          A simple workspace for students to keep track
+          of assignments, deadlines, priorities and progress.
         </p>
 
-
-        <!-- Feature List -->
-        <ul class="pitch-list">
+        <ul class="feature-list">
 
           <li>
-            <span
-              class="pitch-mark"
-              aria-hidden="true"
-            >
-              01
-            </span>
-
-            <span>
-              Log assignments the moment they land
-            </span>
+            <span class="feature-number">01</span>
+            <span>Log assignments the moment they land</span>
           </li>
 
           <li>
-            <span
-              class="pitch-mark"
-              aria-hidden="true"
-            >
-              02
-            </span>
-
-            <span>
-              Sort by due date, subject, or priority
-            </span>
+            <span class="feature-number">02</span>
+            <span>Sort tasks by subject or priority</span>
           </li>
 
           <li>
-            <span
-              class="pitch-mark"
-              aria-hidden="true"
-            >
-              03
-            </span>
-
-            <span>
-              Watch your term progress fill in
-            </span>
+            <span class="feature-number">03</span>
+            <span>Keep an eye on your study progress</span>
           </li>
 
         </ul>
 
+        <div class="stats">
 
-        <!-- Statistics -->
-        <div class="pitch-stat-row">
+          <div class="stat">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Private & local</span>
+          </div>
 
-          <div class="pitch-stat">
+          <div class="stat-divider"></div>
 
-            <span
-              class="pitch-stat-num"
-              id="pitchStatUsers"
+          <div class="stat">
+            <span class="stat-number">0</span>
+            <span class="stat-label">Servers involved</span>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- RIGHT -->
+      <section class="auth-section">
+
+        <div class="auth-card">
+
+          <div class="tabs">
+
+            <button
+              class="tab active"
+              id="loginTab"
+              type="button"
             >
-              100%
-            </span>
-
-            <span class="pitch-stat-label">
-              Private &amp; local
-            </span>
-
-          </div>
-
-
-          <div
-            class="pitch-divider"
-            aria-hidden="true"
-          ></div>
-
-
-          <div class="pitch-stat">
-
-            <span class="pitch-stat-num">
-              0
-            </span>
-
-            <span class="pitch-stat-label">
-              Servers involved
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- =====================================
-           FLOATING TASK CARDS
-      ====================================== -->
-
-      <div
-        class="pitch-card-float"
-        aria-hidden="true"
-      >
-
-        <!-- Card 1 -->
-        <div class="float-card float-card-1">
-
-          <span class="float-card-tag tag-high">
-            High
-          </span>
-
-          <span class="float-card-title">
-            Chem Lab Report
-          </span>
-
-          <span class="float-card-due">
-            Due tomorrow
-          </span>
-
-        </div>
-
-
-        <!-- Card 2 -->
-        <div class="float-card float-card-2">
-
-          <span class="float-stamp">
-            DONE
-          </span>
-
-          <span class="float-card-title">
-            History Essay Draft
-          </span>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-
-    <!-- =======================================
-         RIGHT SIDE — AUTHENTICATION
-    ======================================== -->
-
-    <section
-      class="auth-panel"
-      aria-label="Account authentication"
-    >
-
-      <div class="auth-card">
-
-
-        <!-- =====================================
-             TABS
-        ====================================== -->
-
-        <div
-          class="auth-card-tabs"
-          role="tablist"
-          aria-label="Authentication"
-        >
-
-          <button
-            type="button"
-            class="auth-tab active"
-            id="tabLogin"
-            role="tab"
-            aria-selected="true"
-            aria-controls="loginForm"
-          >
-            Sign in
-          </button>
-
-
-          <button
-            type="button"
-            class="auth-tab"
-            id="tabRegister"
-            role="tab"
-            aria-selected="false"
-            aria-controls="registerForm"
-          >
-            Create account
-          </button>
-
-
-          <span
-            class="auth-tab-indicator"
-            id="tabIndicator"
-            aria-hidden="true"
-          ></span>
-
-        </div>
-
-
-
-        <!-- =====================================
-             LOGIN FORM
-        ====================================== -->
-
-        <form
-          class="auth-form"
-          id="loginForm"
-          novalidate
-          role="tabpanel"
-          aria-labelledby="tabLogin"
-        >
-
-          <!-- Error Alert -->
-          <div
-            class="auth-alert auth-alert-error"
-            id="loginError"
-            role="alert"
-            aria-live="polite"
-            style="display: none;"
-          ></div>
-
-
-          <!-- Username -->
-          <div class="form-group">
-
-            <label
-              for="loginUsername"
-              class="form-label"
-            >
-              Username
-            </label>
-
-            <input
-              type="text"
-              id="loginUsername"
-              name="username"
-              class="form-input"
-              placeholder="e.g. jordan_p"
-              autocomplete="username"
-              autocapitalize="none"
-              spellcheck="false"
-              required
-            />
-
-            <span
-              class="error-msg"
-              id="loginUsernameError"
-              role="alert"
-              aria-live="polite"
-            ></span>
-
-          </div>
-
-
-          <!-- Password -->
-          <div class="form-group">
-
-            <label
-              for="loginPassword"
-              class="form-label"
-            >
-              Password
-            </label>
-
-
-            <div class="input-with-action">
-
-              <input
-                type="password"
-                id="loginPassword"
-                name="password"
-                class="form-input"
-                placeholder="••••••••"
-                autocomplete="current-password"
-                required
-              />
-
-
-              <button
-                type="button"
-                class="input-action-btn"
-                id="toggleLoginPass"
-                aria-label="Show password"
-                aria-controls="loginPassword"
-                aria-pressed="false"
-              >
-                👁
-              </button>
-
-            </div>
-
-
-            <span
-              class="error-msg"
-              id="loginPasswordError"
-              role="alert"
-              aria-live="polite"
-            ></span>
-
-          </div>
-
-
-          <!-- Remember Me -->
-          <label class="checkbox-row">
-
-            <input
-              type="checkbox"
-              id="rememberMe"
-              name="rememberMe"
-            />
-
-            <span>
-              Remember me on this device
-            </span>
-
-          </label>
-
-
-          <!-- Login Button -->
-          <button
-            type="submit"
-            class="btn btn-primary btn-full btn-loading"
-            id="loginSubmitBtn"
-          >
-
-            <span class="btn-label">
               Sign in
-            </span>
+            </button>
+
+            <button
+              class="tab"
+              id="registerTab"
+              type="button"
+            >
+              Create account
+            </button>
 
             <span
-              class="btn-spinner"
-              aria-hidden="true"
+              class="tab-line"
+              id="tabLine"
             ></span>
-
-          </button>
-
-
-          <!-- Register Link -->
-          <p class="auth-switch-line">
-
-            New here?
-
-            <a
-              href="#"
-              id="goRegister"
-              role="button"
-            >
-              Create an account
-            </a>
-
-          </p>
-
-
-          <!-- Demo Login -->
-          <div class="auth-demo-note">
-
-            <span
-              class="auth-demo-icon"
-              aria-hidden="true"
-            >
-              💡
-            </span>
-
-            <span>
-              No account yet?
-              Try
-
-              <button
-                type="button"
-                class="link-inline"
-                id="fillDemo"
-              >
-                the demo login
-              </button>.
-
-            </span>
 
           </div>
 
-        </form>
+
+          <!-- LOGIN -->
+          <form
+            class="form active"
+            id="loginForm"
+          >
+
+            <div
+              class="alert"
+              id="loginAlert"
+            ></div>
 
 
-
-        <!-- =====================================
-             REGISTER FORM
-        ====================================== -->
-
-        <form
-          class="auth-form"
-          id="registerForm"
-          novalidate
-          role="tabpanel"
-          aria-labelledby="tabRegister"
-          style="display: none;"
-        >
-
-          <!-- Error Alert -->
-          <div
-            class="auth-alert auth-alert-error"
-            id="registerError"
-            role="alert"
-            aria-live="polite"
-            style="display: none;"
-          ></div>
-
-
-          <!-- Full Name + Username -->
-          <div class="form-grid-two">
-
-
-            <!-- Full Name -->
             <div class="form-group">
 
               <label
-                for="regFullName"
                 class="form-label"
-              >
-                Full name
-              </label>
-
-              <input
-                type="text"
-                id="regFullName"
-                name="fullName"
-                class="form-input"
-                placeholder="Jordan Park"
-                autocomplete="name"
-                required
-              />
-
-              <span
-                class="error-msg"
-                id="regFullNameError"
-                role="alert"
-                aria-live="polite"
-              ></span>
-
-            </div>
-
-
-            <!-- Username -->
-            <div class="form-group">
-
-              <label
-                for="regUsername"
-                class="form-label"
+                for="loginUsername"
               >
                 Username
               </label>
 
               <input
+                class="input"
+                id="loginUsername"
                 type="text"
-                id="regUsername"
-                name="username"
-                class="form-input"
-                placeholder="jordan_p"
+                placeholder="e.g. jordan_p"
                 autocomplete="username"
-                autocapitalize="none"
-                spellcheck="false"
-                required
-              />
+              >
 
               <span
-                class="error-msg"
-                id="regUsernameError"
-                role="alert"
-                aria-live="polite"
+                class="error-text"
+                id="loginUsernameError"
               ></span>
 
             </div>
 
-          </div>
 
+            <div class="form-group">
 
-          <!-- Password -->
-          <div class="form-group">
-
-            <label
-              for="regPassword"
-              class="form-label"
-            >
-              Password
-            </label>
-
-
-            <div class="input-with-action">
-
-              <input
-                type="password"
-                id="regPassword"
-                name="password"
-                class="form-input"
-                placeholder="At least 6 characters"
-                autocomplete="new-password"
-                minlength="6"
-                required
-              />
-
-
-              <button
-                type="button"
-                class="input-action-btn"
-                id="toggleRegPass"
-                aria-label="Show password"
-                aria-controls="regPassword"
-                aria-pressed="false"
+              <label
+                class="form-label"
+                for="loginPassword"
               >
-                👁
-              </button>
+                Password
+              </label>
+
+              <div class="password-box">
+
+                <input
+                  class="input"
+                  id="loginPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  autocomplete="current-password"
+                >
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  id="loginPasswordToggle"
+                  aria-label="Show password"
+                >
+                  👁
+                </button>
+
+              </div>
+
+              <span
+                class="error-text"
+                id="loginPasswordError"
+              ></span>
 
             </div>
 
 
-            <!-- Password Strength -->
-            <div
-              class="pass-strength"
-              id="passStrength"
-              aria-live="polite"
+            <label class="remember">
+
+              <input
+                type="checkbox"
+                id="rememberMe"
+              >
+
+              <span>Remember me on this device</span>
+
+            </label>
+
+
+            <button
+              class="primary-button"
+              type="submit"
             >
+              Sign in
+            </button>
 
-              <div class="pass-strength-track">
 
-                <div
-                  class="pass-strength-fill"
-                  id="passStrengthFill"
-                ></div>
+            <p class="switch-text">
+              New here?
+
+              <button
+                type="button"
+                class="switch-link"
+                id="showRegister"
+              >
+                Create an account
+              </button>
+            </p>
+
+
+            <div class="demo-box">
+
+              <span>💡</span>
+
+              <span>
+                No account yet?
+                <button
+                  type="button"
+                  class="demo-button"
+                  id="demoLogin"
+                >
+                  Use demo login
+                </button>
+              </span>
+
+            </div>
+
+          </form>
+
+
+          <!-- REGISTER -->
+          <form
+            class="form"
+            id="registerForm"
+          >
+
+            <div
+              class="alert"
+              id="registerAlert"
+            ></div>
+
+
+            <div class="two-columns">
+
+              <div class="form-group">
+
+                <label
+                  class="form-label"
+                  for="fullName"
+                >
+                  Full name
+                </label>
+
+                <input
+                  class="input"
+                  id="fullName"
+                  type="text"
+                  placeholder="Jordan Park"
+                  autocomplete="name"
+                >
+
+                <span
+                  class="error-text"
+                  id="fullNameError"
+                ></span>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label
+                  class="form-label"
+                  for="registerUsername"
+                >
+                  Username
+                </label>
+
+                <input
+                  class="input"
+                  id="registerUsername"
+                  type="text"
+                  placeholder="jordan_p"
+                  autocomplete="username"
+                >
+
+                <span
+                  class="error-text"
+                  id="registerUsernameError"
+                ></span>
+
+              </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label
+                class="form-label"
+                for="registerPassword"
+              >
+                Password
+              </label>
+
+              <div class="password-box">
+
+                <input
+                  class="input"
+                  id="registerPassword"
+                  type="password"
+                  placeholder="At least 6 characters"
+                  autocomplete="new-password"
+                >
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  id="registerPasswordToggle"
+                  aria-label="Show password"
+                >
+                  👁
+                </button>
+
+              </div>
+
+
+              <div class="strength">
+
+                <div class="strength-track">
+                  <div
+                    class="strength-fill"
+                    id="strengthFill"
+                  ></div>
+                </div>
+
+                <span
+                  class="strength-label"
+                  id="strengthLabel"
+                ></span>
 
               </div>
 
 
               <span
-                class="pass-strength-label"
-                id="passStrengthLabel"
+                class="error-text"
+                id="registerPasswordError"
+              ></span>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label
+                class="form-label"
+                for="confirmPassword"
               >
-                &nbsp;
+                Confirm password
+              </label>
+
+              <input
+                class="input"
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              >
+
+              <span
+                class="error-text"
+                id="confirmPasswordError"
+              ></span>
+
+            </div>
+
+
+            <button
+              class="primary-button"
+              type="submit"
+            >
+              Create account
+            </button>
+
+
+            <p class="switch-text">
+
+              Already have an account?
+
+              <button
+                type="button"
+                class="switch-link"
+                id="showLogin"
+              >
+                Sign in
+              </button>
+
+            </p>
+
+          </form>
+
+        </div>
+
+
+        <p class="footnote">
+          Your data is stored locally in this browser.
+          Nothing is sent to a server.
+        </p>
+
+      </section>
+
+    </main>
+
+  </section>
+
+
+  <!-- =====================================================
+       DASHBOARD
+  ====================================================== -->
+
+  <section
+    class="dashboard-page"
+    id="dashboardPage"
+  >
+
+    <div class="dashboard-container">
+
+      <header class="dashboard-header">
+
+        <div>
+          <div class="dashboard-brand">
+            StudyTrack
+          </div>
+
+          <div class="dashboard-user">
+            Welcome,
+            <strong id="dashboardUserName">
+              Student
+            </strong>
+          </div>
+        </div>
+
+
+        <button
+          class="logout-button"
+          id="logoutButton"
+          type="button"
+        >
+          Log out
+        </button>
+
+      </header>
+
+
+      <div class="dashboard-intro">
+
+        <h1>
+          Your study board.
+        </h1>
+
+        <p>
+          Keep your assignments organized and stay on top of your term.
+        </p>
+
+      </div>
+
+
+      <div class="dashboard-grid">
+
+
+        <!-- TASKS -->
+        <section class="panel">
+
+          <h2 class="panel-title">
+            Assignments
+          </h2>
+
+          <div
+            class="task-list"
+            id="taskList"
+          ></div>
+
+        </section>
+
+
+        <!-- ADD TASK -->
+        <aside class="panel">
+
+          <h2 class="panel-title">
+            Add assignment
+          </h2>
+
+
+          <form
+            class="task-form"
+            id="taskForm"
+          >
+
+            <input
+              id="taskTitle"
+              type="text"
+              placeholder="Assignment title"
+              required
+            >
+
+            <input
+              id="taskSubject"
+              type="text"
+              placeholder="Subject"
+              required
+            >
+
+            <input
+              id="taskDate"
+              type="date"
+              required
+            >
+
+            <select id="taskPriority">
+
+              <option value="High">
+                High priority
+              </option>
+
+              <option
+                value="Medium"
+                selected
+              >
+                Medium priority
+              </option>
+
+              <option value="Low">
+                Low priority
+              </option>
+
+            </select>
+
+            <button
+              class="task-add"
+              type="submit"
+            >
+              Add assignment
+            </button>
+
+          </form>
+
+
+          <div class="stats-grid">
+
+            <div class="dashboard-stat">
+
+              <strong id="totalTasks">
+                0
+              </strong>
+
+              <span>
+                Total
               </span>
 
             </div>
 
 
-            <span
-              class="error-msg"
-              id="regPasswordError"
-              role="alert"
-              aria-live="polite"
-            ></span>
+            <div class="dashboard-stat">
+
+              <strong id="completedTasks">
+                0
+              </strong>
+
+              <span>
+                Completed
+              </span>
+
+            </div>
+
+
+            <div class="dashboard-stat">
+
+              <strong id="pendingTasks">
+                0
+              </strong>
+
+              <span>
+                Pending
+              </span>
+
+            </div>
+
+
+            <div class="dashboard-stat">
+
+              <strong id="progressPercent">
+                0%
+              </strong>
+
+              <span>
+                Progress
+              </span>
+
+            </div>
 
           </div>
 
-
-          <!-- Confirm Password -->
-          <div class="form-group">
-
-            <label
-              for="regConfirm"
-              class="form-label"
-            >
-              Confirm password
-            </label>
-
-            <input
-              type="password"
-              id="regConfirm"
-              name="confirmPassword"
-              class="form-input"
-              placeholder="••••••••"
-              autocomplete="new-password"
-              minlength="6"
-              required
-            />
-
-            <span
-              class="error-msg"
-              id="regConfirmError"
-              role="alert"
-              aria-live="polite"
-            ></span>
-
-          </div>
-
-
-          <!-- Create Account Button -->
-          <button
-            type="submit"
-            class="btn btn-primary btn-full btn-loading"
-            id="registerSubmitBtn"
-          >
-
-            <span class="btn-label">
-              Create account
-            </span>
-
-            <span
-              class="btn-spinner"
-              aria-hidden="true"
-            ></span>
-
-          </button>
-
-
-          <!-- Login Link -->
-          <p class="auth-switch-line">
-
-            Already have an account?
-
-            <a
-              href="#"
-              id="goLogin"
-              role="button"
-            >
-              Sign in
-            </a>
-
-          </p>
-
-        </form>
+        </aside>
 
       </div>
 
+    </div>
 
-      <!-- =====================================
-           FOOTNOTE
-      ====================================== -->
-
-      <p class="auth-footnote">
-        Stored only in this browser's local storage —
-        nothing leaves your device.
-      </p>
-
-    </section>
-
-  </main>
+  </section>
 
 
-  <!-- =========================================
-       TOAST
-  ========================================== -->
-
-  <div
-    class="toast"
-    id="toast"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  ></div>
-
-
-  <!-- =========================================
+  <!-- =====================================================
        JAVASCRIPT
-  ========================================== -->
+       Everything is inside this single HTML file.
+  ====================================================== -->
 
-  <script src="auth.js" defer></script>
+  <script>
+
+    "use strict";
+
+
+    /* =====================================================
+       STORAGE
+    ===================================================== */
+
+    const USERS_KEY = "studytrack_users";
+    const SESSION_KEY = "studytrack_session";
+    const TASKS_KEY = "studytrack_tasks";
+
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const authPage =
+      document.getElementById("authPage");
+
+    const dashboardPage =
+      document.getElementById("dashboardPage");
+
+    const loginTab =
+      document.getElementById("loginTab");
+
+    const registerTab =
+      document.getElementById("registerTab");
+
+    const tabLine =
+      document.getElementById("tabLine");
+
+    const loginForm =
+      document.getElementById("loginForm");
+
+    const registerForm =
+      document.getElementById("registerForm");
+
+    const showRegister =
+      document.getElementById("showRegister");
+
+    const showLogin =
+      document.getElementById("showLogin");
+
+    const loginUsername =
+      document.getElementById("loginUsername");
+
+    const loginPassword =
+      document.getElementById("loginPassword");
+
+    const fullName =
+      document.getElementById("fullName");
+
+    const registerUsername =
+      document.getElementById("registerUsername");
+
+    const registerPassword =
+      document.getElementById("registerPassword");
+
+    const confirmPassword =
+      document.getElementById("confirmPassword");
+
+    const loginAlert =
+      document.getElementById("loginAlert");
+
+    const registerAlert =
+      document.getElementById("registerAlert");
+
+    const rememberMe =
+      document.getElementById("rememberMe");
+
+
+    /* =====================================================
+       STORAGE FUNCTIONS
+    ===================================================== */
+
+    function getUsers() {
+
+      try {
+
+        const data =
+          localStorage.getItem(USERS_KEY);
+
+        if (!data) {
+          return [];
+        }
+
+        const users = JSON.parse(data);
+
+        return Array.isArray(users)
+          ? users
+          : [];
+
+      } catch {
+
+        return [];
+
+      }
+
+    }
+
+
+    function saveUsers(users) {
+
+      localStorage.setItem(
+        USERS_KEY,
+        JSON.stringify(users)
+      );
+
+    }
+
+
+    function getTasks() {
+
+      try {
+
+        const data =
+          localStorage.getItem(TASKS_KEY);
+
+        if (!data) {
+          return [];
+        }
+
+        const tasks = JSON.parse(data);
+
+        return Array.isArray(tasks)
+          ? tasks
+          : [];
+
+      } catch {
+
+        return [];
+
+      }
+
+    }
+
+
+    function saveTasks(tasks) {
+
+      localStorage.setItem(
+        TASKS_KEY,
+        JSON.stringify(tasks)
+      );
+
+    }
+
+
+    function getSession() {
+
+      try {
+
+        const data =
+          localStorage.getItem(SESSION_KEY);
+
+        return data
+          ? JSON.parse(data)
+          : null;
+
+      } catch {
+
+        return null;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       TABS
+    ===================================================== */
+
+    function openLogin() {
+
+      loginForm.classList.add("active");
+      registerForm.classList.remove("active");
+
+      loginTab.classList.add("active");
+      registerTab.classList.remove("active");
+
+      tabLine.style.transform =
+        "translateX(0)";
+
+      clearErrors();
+
+    }
+
+
+    function openRegister() {
+
+      loginForm.classList.remove("active");
+      registerForm.classList.add("active");
+
+      loginTab.classList.remove("active");
+      registerTab.classList.add("active");
+
+      tabLine.style.transform =
+        "translateX(100%)";
+
+      clearErrors();
+
+    }
+
+
+    loginTab.addEventListener(
+      "click",
+      openLogin
+    );
+
+    registerTab.addEventListener(
+      "click",
+      openRegister
+    );
+
+    showRegister.addEventListener(
+      "click",
+      openRegister
+    );
+
+    showLogin.addEventListener(
+      "click",
+      openLogin
+    );
+
+
+    /* =====================================================
+       PASSWORD VISIBILITY
+    ===================================================== */
+
+    function togglePassword(
+      input,
+      button
+    ) {
+
+      const hidden =
+        input.type === "password";
+
+      input.type =
+        hidden
+          ? "text"
+          : "password";
+
+      button.textContent =
+        hidden
+          ? "🙈"
+          : "👁";
+
+    }
+
+
+    document
+      .getElementById("loginPasswordToggle")
+      .addEventListener(
+        "click",
+        function () {
+
+          togglePassword(
+            loginPassword,
+            this
+          );
+
+        }
+      );
+
+
+    document
+      .getElementById("registerPasswordToggle")
+      .addEventListener(
+        "click",
+        function () {
+
+          togglePassword(
+            registerPassword,
+            this
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       PASSWORD STRENGTH
+    ===================================================== */
+
+    registerPassword.addEventListener(
+      "input",
+      function () {
+
+        const password =
+          this.value;
+
+        const fill =
+          document.getElementById(
+            "strengthFill"
+          );
+
+        const label =
+          document.getElementById(
+            "strengthLabel"
+          );
+
+        if (!password) {
+
+          fill.style.width = "0%";
+          label.textContent = "";
+
+          return;
+
+        }
+
+        let score = 0;
+
+        if (password.length >= 6)
+          score++;
+
+        if (password.length >= 10)
+          score++;
+
+        if (/[A-Z]/.test(password))
+          score++;
+
+        if (/[0-9]/.test(password))
+          score++;
+
+        if (/[^A-Za-z0-9]/.test(password))
+          score++;
+
+
+        if (score <= 1) {
+
+          fill.style.width = "25%";
+          label.textContent = "Weak";
+
+        } else if (score <= 3) {
+
+          fill.style.width = "60%";
+          label.textContent = "Medium";
+
+        } else {
+
+          fill.style.width = "100%";
+          label.textContent = "Strong";
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       ERROR HANDLING
+    ===================================================== */
+
+    function clearErrors() {
+
+      document
+        .querySelectorAll(".error-text")
+        .forEach(
+          element =>
+            element.textContent = ""
+        );
+
+      document
+        .querySelectorAll(".input")
+        .forEach(
+          input =>
+            input.classList.remove("error")
+        );
+
+      loginAlert.style.display = "none";
+      registerAlert.style.display = "none";
+
+      loginAlert.textContent = "";
+      registerAlert.textContent = "";
+
+    }
+
+
+    function showAlert(
+      element,
+      message
+    ) {
+
+      element.textContent =
+        message;
+
+      element.style.display =
+        "block";
+
+    }
+
+
+    function setFieldError(
+      input,
+      errorElement,
+      message
+    ) {
+
+      input.classList.add("error");
+
+      errorElement.textContent =
+        message;
+
+    }
+
+
+    /* =====================================================
+       REGISTER
+    ===================================================== */
+
+    registerForm.addEventListener(
+      "submit",
+      function (event) {
+
+        event.preventDefault();
+
+        clearErrors();
+
+        const name =
+          fullName.value.trim();
+
+        const username =
+          registerUsername.value
+            .trim()
+            .toLowerCase();
+
+        const password =
+          registerPassword.value;
+
+        const confirm =
+          confirmPassword.value;
+
+
+        let valid = true;
+
+
+        if (name.length < 2) {
+
+          setFieldError(
+            fullName,
+            document.getElementById(
+              "fullNameError"
+            ),
+            "Enter your full name."
+          );
+
+          valid = false;
+
+        }
+
+
+        if (
+          !/^[a-zA-Z0-9_]{3,20}$/
+            .test(username)
+        ) {
+
+          setFieldError(
+            registerUsername,
+            document.getElementById(
+              "registerUsernameError"
+            ),
+            "Use 3–20 letters, numbers or underscores."
+          );
+
+          valid = false;
+
+        }
+
+
+        if (password.length < 6) {
+
+          setFieldError(
+            registerPassword,
+            document.getElementById(
+              "registerPasswordError"
+            ),
+            "Password must contain at least 6 characters."
+          );
+
+          valid = false;
+
+        }
+
+
+        if (confirm !== password) {
+
+          setFieldError(
+            confirmPassword,
+            document.getElementById(
+              "confirmPasswordError"
+            ),
+            "Passwords do not match."
+          );
+
+          valid = false;
+
+        }
+
+
+        if (!valid) {
+          return;
+        }
+
+
+        const users =
+          getUsers();
+
+
+        const exists =
+          users.some(
+            user =>
+              user.username === username
+          );
+
+
+        if (exists) {
+
+          setFieldError(
+            registerUsername,
+            document.getElementById(
+              "registerUsernameError"
+            ),
+            "This username is already registered."
+          );
+
+          return;
+
+        }
+
+
+        const newUser = {
+
+          id:
+            Date.now().toString(),
+
+          name,
+          username,
+          password,
+
+          createdAt:
+            new Date().toISOString()
+
+        };
+
+
+        users.push(newUser);
+
+        saveUsers(users);
+
+
+        alert(
+          "Account created successfully!"
+        );
+
+
+        loginUsername.value =
+          username;
+
+        loginPassword.value =
+          "";
+
+        registerForm.reset();
+
+        document.getElementById(
+          "strengthFill"
+        ).style.width = "0%";
+
+        document.getElementById(
+          "strengthLabel"
+        ).textContent = "";
+
+
+        openLogin();
+
+      }
+    );
+
+
+    /* =====================================================
+       LOGIN
+    ===================================================== */
+
+    loginForm.addEventListener(
+      "submit",
+      function (event) {
+
+        event.preventDefault();
+
+        clearErrors();
+
+        const username =
+          loginUsername.value
+            .trim()
+            .toLowerCase();
+
+        const password =
+          loginPassword.value;
+
+
+        let valid = true;
+
+
+        if (!username) {
+
+          setFieldError(
+            loginUsername,
+            document.getElementById(
+              "loginUsernameError"
+            ),
+            "Enter your username."
+          );
+
+          valid = false;
+
+        }
+
+
+        if (!password) {
+
+          setFieldError(
+            loginPassword,
+            document.getElementById(
+              "loginPasswordError"
+            ),
+            "Enter your password."
+          );
+
+          valid = false;
+
+        }
+
+
+        if (!valid) {
+          return;
+        }
+
+
+        const users =
+          getUsers();
+
+
+        const user =
+          users.find(
+            item =>
+              item.username === username &&
+              item.password === password
+          );
+
+
+        if (!user) {
+
+          showAlert(
+            loginAlert,
+            "Incorrect username or password."
+          );
+
+          return;
+
+        }
+
+
+        const session = {
+
+          id: user.id,
+
+          name: user.name,
+
+          username: user.username
+
+        };
+
+
+        localStorage.setItem(
+          SESSION_KEY,
+          JSON.stringify(session)
+        );
+
+
+        if (rememberMe.checked) {
+
+          localStorage.setItem(
+            "studytrack_remembered",
+            username
+          );
+
+        } else {
+
+          localStorage.removeItem(
+            "studytrack_remembered"
+          );
+
+        }
+
+
+        showDashboard();
+
+      }
+    );
+
+
+    /* =====================================================
+       DEMO LOGIN
+    ===================================================== */
+
+    document
+      .getElementById("demoLogin")
+      .addEventListener(
+        "click",
+        function () {
+
+          const users =
+            getUsers();
+
+          const demoUsername =
+            "demo_student";
+
+          const demoPassword =
+            "demo123";
+
+
+          const exists =
+            users.some(
+              user =>
+                user.username ===
+                demoUsername
+            );
+
+
+          if (!exists) {
+
+            users.push({
+
+              id: "demo",
+
+              name: "Demo Student",
+
+              username:
+                demoUsername,
+
+              password:
+                demoPassword,
+
+              createdAt:
+                new Date().toISOString()
+
+            });
+
+            saveUsers(users);
+
+          }
+
+
+          loginUsername.value =
+            demoUsername;
+
+          loginPassword.value =
+            demoPassword;
+
+        }
+      );
+
+
+    /* =====================================================
+       DASHBOARD
+    ===================================================== */
+
+    function showDashboard() {
+
+      const session =
+        getSession();
+
+      if (!session) {
+        return;
+      }
+
+
+      authPage.style.display =
+        "none";
+
+      dashboardPage.classList.add(
+        "active"
+      );
+
+
+      document.getElementById(
+        "dashboardUserName"
+      ).textContent =
+        session.name;
+
+
+      renderTasks();
+
+    }
+
+
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
+
+    document
+      .getElementById("logoutButton")
+      .addEventListener(
+        "click",
+        function () {
+
+          localStorage.removeItem(
+            SESSION_KEY
+          );
+
+          dashboardPage.classList.remove(
+            "active"
+          );
+
+          authPage.style.display =
+            "block";
+
+          loginForm.reset();
+
+          clearErrors();
+
+          openLogin();
+
+        }
+      );
+
+
+    /* =====================================================
+       ADD TASK
+    ===================================================== */
+
+    document
+      .getElementById("taskForm")
+      .addEventListener(
+        "submit",
+        function (event) {
+
+          event.preventDefault();
+
+
+          const session =
+            getSession();
+
+          if (!session) {
+            return;
+          }
+
+
+          const title =
+            document
+              .getElementById("taskTitle")
+              .value
+              .trim();
+
+          const subject =
+            document
+              .getElementById("taskSubject")
+              .value
+              .trim();
+
+          const date =
+            document
+              .getElementById("taskDate")
+              .value;
+
+          const priority =
+            document
+              .getElementById("taskPriority")
+              .value;
+
+
+          if (
+            !title ||
+            !subject ||
+            !date
+          ) {
+
+            return;
+
+          }
+
+
+          const tasks =
+            getTasks();
+
+
+          tasks.push({
+
+            id:
+              Date.now().toString(),
+
+            username:
+              session.username,
+
+            title,
+            subject,
+            date,
+            priority,
+
+            completed: false
+
+          });
+
+
+          saveTasks(tasks);
+
+
+          this.reset();
+
+          renderTasks();
+
+        }
+      );
+
+
+    /* =====================================================
+       RENDER TASKS
+    ===================================================== */
+
+    function renderTasks() {
+
+      const session =
+        getSession();
+
+      if (!session) {
+        return;
+      }
+
+
+      const tasks =
+        getTasks().filter(
+          task =>
+            task.username ===
+            session.username
+        );
+
+
+      const list =
+        document.getElementById(
+          "taskList"
+        );
+
+
+      if (!tasks.length) {
+
+        list.innerHTML = `
+          <div class="empty-state">
+            <strong>No assignments yet.</strong>
+            <br>
+            Add your first assignment from the panel.
+          </div>
+        `;
+
+        updateStats([]);
+
+        return;
+
+      }
+
+
+      tasks.sort(
+        (a, b) =>
+          new Date(a.date) -
+          new Date(b.date)
+      );
+
+
+      list.innerHTML =
+        tasks
+          .map(
+            task => `
+
+              <div
+                class="task-card ${
+                  task.completed
+                    ? "task-completed"
+                    : ""
+                }"
+              >
+
+                <button
+                  class="task-check"
+                  type="button"
+                  onclick="toggleTask('${task.id}')"
+                >
+                  ${
+                    task.completed
+                      ? "✓"
+                      : ""
+                  }
+                </button>
+
+
+                <div class="task-content">
+
+                  <h3>
+                    ${escapeHTML(task.title)}
+                  </h3>
+
+                  <div class="task-meta">
+
+                    <span>
+                      ${escapeHTML(task.subject)}
+                    </span>
+
+                    <span>
+                      ${formatDate(task.date)}
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <span
+                  class="priority priority-${task.priority.toLowerCase()}"
+                >
+                  ${task.priority}
+                </span>
+
+
+                <button
+                  class="delete-task"
+                  type="button"
+                  onclick="deleteTask('${task.id}')"
+                  aria-label="Delete assignment"
+                >
+                  ×
+                </button>
+
+              </div>
+
+            `
+          )
+          .join("");
+
+
+      updateStats(tasks);
+
+    }
+
+
+    /* =====================================================
+       COMPLETE TASK
+    ===================================================== */
+
+    function toggleTask(id) {
+
+      const tasks =
+        getTasks();
+
+      const session =
+        getSession();
+
+
+      const task =
+        tasks.find(
+          item =>
+            item.id === id &&
+            item.username ===
+              session.username
+        );
+
+
+      if (!task) {
+        return;
+      }
+
+
+      task.completed =
+        !task.completed;
+
+
+      saveTasks(tasks);
+
+      renderTasks();
+
+    }
+
+
+    /* =====================================================
+       DELETE TASK
+    ===================================================== */
+
+    function deleteTask(id) {
+
+      const session =
+        getSession();
+
+
+      let tasks =
+        getTasks();
+
+
+      tasks =
+        tasks.filter(
+          task =>
+            !(
+              task.id === id &&
+              task.username ===
+                session.username
+            )
+        );
+
+
+      saveTasks(tasks);
+
+      renderTasks();
+
+    }
+
+
+    /* =====================================================
+       STATISTICS
+    ===================================================== */
+
+    function updateStats(tasks) {
+
+      const total =
+        tasks.length;
+
+
+      const completed =
+        tasks.filter(
+          task =>
+            task.completed
+        ).length;
+
+
+      const pending =
+        total - completed;
+
+
+      const progress =
+        total === 0
+          ? 0
+          : Math.round(
+              (completed / total) *
+              100
+            );
+
+
+      document.getElementById(
+        "totalTasks"
+      ).textContent =
+        total;
+
+
+      document.getElementById(
+        "completedTasks"
+      ).textContent =
+        completed;
+
+
+      document.getElementById(
+        "pendingTasks"
+      ).textContent =
+        pending;
+
+
+      document.getElementById(
+        "progressPercent"
+      ).textContent =
+        `${progress}%`;
+
+    }
+
+
+    /* =====================================================
+       DATE
+    ===================================================== */
+
+    function formatDate(date) {
+
+      const parsed =
+        new Date(
+          `${date}T00:00:00`
+        );
+
+
+      if (
+        Number.isNaN(
+          parsed.getTime()
+        )
+      ) {
+
+        return date;
+
+      }
+
+
+      return parsed.toLocaleDateString(
+        "en-US",
+        {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        }
+      );
+
+    }
+
+
+    /* =====================================================
+       SECURITY — TEXT ESCAPING
+    ===================================================== */
+
+    function escapeHTML(value) {
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+
+    /* =====================================================
+       REMEMBERED USERNAME
+    ===================================================== */
+
+    const remembered =
+      localStorage.getItem(
+        "studytrack_remembered"
+      );
+
+
+    if (remembered) {
+
+      loginUsername.value =
+        remembered;
+
+      rememberMe.checked =
+        true;
+
+    }
+
+
+    /* =====================================================
+       RESTORE SESSION
+    ===================================================== */
+
+    if (getSession()) {
+
+      showDashboard();
+
+    }
+
+  </script>
 
 </body>
 </html>
