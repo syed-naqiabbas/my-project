@@ -54,6 +54,12 @@ StudyTrack provides one organized place to:
 
 👤 Maintain separate task data for different users
 
+👤 About Me 👤
+Hi, Assalamualaikum, I'm Naqi Abbas and I am learning vibe coding from Bano Qabil.
+
+My Full name is: Syed Naqi Abbas Rizvi 
+My Roll no: 991142
+
 ⚡ Feature Showcase
 
 <table>
