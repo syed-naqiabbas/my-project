@@ -56,8 +56,9 @@ StudyTrack provides one organized place to:
 
 <h1> About Me 👤 </h1>
 Hi, Assalamualaikum, I'm Naqi Abbas and I am learning vibe coding from Bano Qabil.
-
+<br>
 My Full name is: Syed Naqi Abbas Rizvi 
+<br>
 My Roll no: 491142
 
 ⚡ Feature Showcase
