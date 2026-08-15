@@ -1,228 +1,558 @@
-// =============================================
-// auth.js — StudyTrack Authentication System
-// Handles user registration, login, and session
-// NOTE: This is a frontend-only demo authentication
-// system using localStorage. Not for real-world use.
-// =============================================
+"use strict";
 
-// ---- LocalStorage Key for the users list ----
-var USERS_KEY = "studytrack_users";
-var SESSION_KEY = "studytrack_session";
+/*
+ * StudyTrack Authentication
+ * -------------------------
+ * Data is stored locally in the browser.
+ *
+ * Storage:
+ * studytrack_users
+ * studytrack_current_user
+ * studytrack_remembered_user
+ */
 
-// =============================================
-// LOAD & SAVE USERS
-// =============================================
+const USERS_KEY = "studytrack_users";
+const CURRENT_USER_KEY = "studytrack_current_user";
+const REMEMBERED_USER_KEY = "studytrack_remembered_user";
 
-// Load all registered users from localStorage
-function loadUsers() {
-  var raw = localStorage.getItem(USERS_KEY);
-  if (raw) {
-    return JSON.parse(raw);
+/* ---------- DOM Elements ---------- */
+
+const tabLogin = document.getElementById("tabLogin");
+const tabRegister = document.getElementById("tabRegister");
+const tabIndicator = document.getElementById("tabIndicator");
+
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+
+const goRegister = document.getElementById("goRegister");
+const goLogin = document.getElementById("goLogin");
+
+const loginError = document.getElementById("loginError");
+const registerError = document.getElementById("registerError");
+
+const loginUsername = document.getElementById("loginUsername");
+const loginPassword = document.getElementById("loginPassword");
+
+const regFullName = document.getElementById("regFullName");
+const regUsername = document.getElementById("regUsername");
+const regPassword = document.getElementById("regPassword");
+const regConfirm = document.getElementById("regConfirm");
+
+const toggleLoginPass = document.getElementById("toggleLoginPass");
+const toggleRegPass = document.getElementById("toggleRegPass");
+
+const rememberMe = document.getElementById("rememberMe");
+const fillDemo = document.getElementById("fillDemo");
+
+const passStrengthFill = document.getElementById("passStrengthFill");
+const passStrengthLabel = document.getElementById("passStrengthLabel");
+
+const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+const registerSubmitBtn = document.getElementById("registerSubmitBtn");
+
+const toast = document.getElementById("toast");
+
+/* ---------- Storage Helpers ---------- */
+
+function getUsers() {
+  try {
+    const data = localStorage.getItem(USERS_KEY);
+
+    if (!data) {
+      return [];
+    }
+
+    const users = JSON.parse(data);
+
+    return Array.isArray(users) ? users : [];
+  } catch (error) {
+    console.error("Could not read users:", error);
+    return [];
   }
-  return []; // Return empty array if no users yet
 }
 
-// Save the users array to localStorage
-function saveUser(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+function saveUsers(users) {
+  localStorage.setItem(
+    USERS_KEY,
+    JSON.stringify(users)
+  );
 }
 
-// =============================================
-// REGISTER USER
-// =============================================
-
-// Register a new user account
-// Returns: { success: true } or { success: false, message: "reason" }
-function registerUser(fullName, username, password) {
-  var users = loadUsers();
-
-  // Check if username is already taken (case-insensitive)
-  var exists = users.find(function (u) {
-    return u.username.toLowerCase() === username.toLowerCase();
-  });
-
-  if (exists) {
-    return { success: false, message: "That username is already taken. Please choose a different one." };
-  }
-
-  // Create the new user object
-  var newUser = {
-    fullName: fullName,
-    username: username,
-    password: password, // NOTE: Not hashed — demo only
-    createdAt: new Date().toISOString()
-  };
-
-  users.push(newUser);
-  saveUser(users);
-
-  // Create starter/demo tasks for this brand new user
-  createDemoTasks(username);
-
-  return { success: true };
+function normalizeUsername(username) {
+  return username.trim().toLowerCase();
 }
 
-// =============================================
-// LOGIN USER
-// =============================================
-
-// Try to log in with username and password
-// Returns: { success: true, user: {...} } or { success: false, message: "..." }
-function loginUser(username, password) {
-  var users = loadUsers();
-
-  // Find user by username (case-insensitive)
-  var user = users.find(function (u) {
-    return u.username.toLowerCase() === username.toLowerCase();
-  });
-
-  if (!user) {
-    return { success: false, message: "No account found with that username." };
-  }
-
-  if (user.password !== password) {
-    return { success: false, message: "Incorrect password. Please try again." };
-  }
-
-  // Save session — store the username of who is logged in
-  localStorage.setItem(SESSION_KEY, user.username);
-
-  return { success: true, user: user };
-}
-
-// =============================================
-// LOGOUT USER
-// =============================================
-
-// Log out the current user
-// Clears the session but keeps account and tasks
-function logoutUser() {
-  localStorage.removeItem(SESSION_KEY);
-  window.location.href = "login.html";
-}
-
-// =============================================
-// GET CURRENT USER
-// =============================================
-
-// Returns the currently logged-in user object, or null
 function getCurrentUser() {
-  var username = localStorage.getItem(SESSION_KEY);
-  if (!username) return null;
+  try {
+    const data = localStorage.getItem(CURRENT_USER_KEY);
 
-  var users = loadUsers();
-  var user = users.find(function (u) {
-    return u.username === username;
-  });
-
-  return user || null;
-}
-
-// =============================================
-// CHECK AUTHENTICATION
-// =============================================
-
-// Use this on protected pages (like index.html)
-// Redirects to login if no session found
-function checkAuthentication() {
-  var user = getCurrentUser();
-  if (!user) {
-    window.location.href = "login.html";
+    return data ? JSON.parse(data) : null;
+  } catch {
     return null;
   }
-  return user;
 }
 
-// =============================================
-// DEMO TASKS FOR NEW USERS
-// =============================================
+/* ---------- Toast ---------- */
 
-// Create a few starter tasks when a user first registers
-// so their dashboard doesn't look empty
-function createDemoTasks(username) {
-  var today = new Date();
+let toastTimer;
 
-  // Helper to get a date N days from now in YYYY-MM-DD format
-  function futureDate(days) {
-    var d = new Date(today);
-    d.setDate(d.getDate() + days);
-    return d.toISOString().split("T")[0];
+function showToast(message) {
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+/* ---------- Form Errors ---------- */
+
+function setError(input, errorElement, message) {
+  if (input) {
+    input.classList.toggle("input-error", Boolean(message));
   }
 
-  // Helper to make a simple unique ID
-  function makeId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  if (errorElement) {
+    errorElement.textContent = message || "";
+  }
+}
+
+function clearLoginErrors() {
+  loginError.style.display = "none";
+  loginError.textContent = "";
+
+  setError(
+    loginUsername,
+    document.getElementById("loginUsernameError"),
+    ""
+  );
+
+  setError(
+    loginPassword,
+    document.getElementById("loginPasswordError"),
+    ""
+  );
+}
+
+function clearRegisterErrors() {
+  registerError.style.display = "none";
+  registerError.textContent = "";
+
+  setError(
+    regFullName,
+    document.getElementById("regFullNameError"),
+    ""
+  );
+
+  setError(
+    regUsername,
+    document.getElementById("regUsernameError"),
+    ""
+  );
+
+  setError(
+    regPassword,
+    document.getElementById("regPasswordError"),
+    ""
+  );
+
+  setError(
+    regConfirm,
+    document.getElementById("regConfirmError"),
+    ""
+  );
+}
+
+function showLoginError(message) {
+  loginError.textContent = message;
+  loginError.style.display = "block";
+}
+
+function showRegisterError(message) {
+  registerError.textContent = message;
+  registerError.style.display = "block";
+}
+
+/* ---------- Tab Switching ---------- */
+
+function showLogin() {
+  loginForm.style.display = "block";
+  registerForm.style.display = "none";
+
+  tabLogin.classList.add("active");
+  tabRegister.classList.remove("active");
+
+  tabLogin.setAttribute("aria-selected", "true");
+  tabRegister.setAttribute("aria-selected", "false");
+
+  tabIndicator.style.transform = "translateX(0)";
+
+  clearRegisterErrors();
+}
+
+function showRegister() {
+  loginForm.style.display = "none";
+  registerForm.style.display = "block";
+
+  tabLogin.classList.remove("active");
+  tabRegister.classList.add("active");
+
+  tabLogin.setAttribute("aria-selected", "false");
+  tabRegister.setAttribute("aria-selected", "true");
+
+  tabIndicator.style.transform = "translateX(100%)";
+
+  clearLoginErrors();
+}
+
+tabLogin.addEventListener("click", showLogin);
+tabRegister.addEventListener("click", showRegister);
+
+goRegister.addEventListener("click", function (event) {
+  event.preventDefault();
+  showRegister();
+});
+
+goLogin.addEventListener("click", function (event) {
+  event.preventDefault();
+  showLogin();
+});
+
+/* ---------- Password Visibility ---------- */
+
+function setupPasswordToggle(button, input) {
+  if (!button || !input) return;
+
+  button.addEventListener("click", function () {
+    const isPassword = input.type === "password";
+
+    input.type = isPassword ? "text" : "password";
+
+    button.setAttribute(
+      "aria-label",
+      isPassword ? "Hide password" : "Show password"
+    );
+
+    button.setAttribute(
+      "aria-pressed",
+      String(isPassword)
+    );
+  });
+}
+
+setupPasswordToggle(
+  toggleLoginPass,
+  loginPassword
+);
+
+setupPasswordToggle(
+  toggleRegPass,
+  regPassword
+);
+
+/* ---------- Password Strength ---------- */
+
+function updatePasswordStrength(password) {
+  if (!passStrengthFill || !passStrengthLabel) {
+    return;
   }
 
-  var demoTasks = [
-    {
-      id: makeId(),
-      title: "Complete Mathematics Assignment",
-      subject: "Mathematics",
-      description: "Finish all exercises from Chapter 6. Show full working for each problem.",
-      dueDate: futureDate(3),
-      priority: "high",
-      completed: false,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: makeId(),
-      title: "Prepare Science Presentation",
-      subject: "Science",
-      description: "Create slides on the topic of renewable energy. Include graphs and real-world examples.",
-      dueDate: futureDate(5),
-      priority: "medium",
-      completed: false,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: makeId(),
-      title: "Submit Web Development Project",
-      subject: "Web Development",
-      description: "Final submission of the StudyTrack midterm project. Make sure all features are working.",
-      dueDate: futureDate(7),
-      priority: "high",
-      completed: false,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: makeId(),
-      title: "Read History Chapter 4",
-      subject: "History",
-      description: "Read and make notes on Chapter 4. Focus on key dates and events.",
-      dueDate: futureDate(2),
-      priority: "low",
-      completed: true,
-      createdAt: new Date().toISOString()
+  if (!password) {
+    passStrengthFill.style.width = "0%";
+    passStrengthLabel.innerHTML = "&nbsp;";
+    return;
+  }
+
+  let score = 0;
+
+  if (password.length >= 6) score++;
+  if (password.length >= 10) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  if (score <= 1) {
+    passStrengthFill.style.width = "25%";
+    passStrengthLabel.textContent = "Weak";
+  } else if (score <= 3) {
+    passStrengthFill.style.width = "60%";
+    passStrengthLabel.textContent = "Medium";
+  } else {
+    passStrengthFill.style.width = "100%";
+    passStrengthLabel.textContent = "Strong";
+  }
+}
+
+regPassword.addEventListener("input", function () {
+  updatePasswordStrength(regPassword.value);
+});
+
+/* ---------- Username Validation ---------- */
+
+function isValidUsername(username) {
+  return /^[a-zA-Z0-9_]{3,20}$/.test(username);
+}
+
+/* ---------- Login ---------- */
+
+loginForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  clearLoginErrors();
+
+  const username = normalizeUsername(
+    loginUsername.value
+  );
+
+  const password = loginPassword.value;
+
+  let valid = true;
+
+  if (!username) {
+    setError(
+      loginUsername,
+      document.getElementById("loginUsernameError"),
+      "Please enter your username."
+    );
+
+    valid = false;
+  }
+
+  if (!password) {
+    setError(
+      loginPassword,
+      document.getElementById("loginPasswordError"),
+      "Please enter your password."
+    );
+
+    valid = false;
+  }
+
+  if (!valid) return;
+
+  const users = getUsers();
+
+  const user = users.find(
+    item =>
+      item.username === username &&
+      item.password === password
+  );
+
+  if (!user) {
+    showLoginError(
+      "Incorrect username or password."
+    );
+
+    return;
+  }
+
+  loginSubmitBtn.classList.add("loading");
+
+  setTimeout(() => {
+    const sessionUser = {
+      id: user.id,
+      fullName: user.fullName,
+      username: user.username
+    };
+
+    localStorage.setItem(
+      CURRENT_USER_KEY,
+      JSON.stringify(sessionUser)
+    );
+
+    if (rememberMe.checked) {
+      localStorage.setItem(
+        REMEMBERED_USER_KEY,
+        user.username
+      );
+    } else {
+      localStorage.removeItem(
+        REMEMBERED_USER_KEY
+      );
     }
-  ];
 
-  // Save under user-specific key
-  var userTasksKey = "tasks_" + username;
-  localStorage.setItem(userTasksKey, JSON.stringify(demoTasks));
-}
+    showToast("Login successful!");
 
-// =============================================
-// SHARED FORM HELPER FUNCTIONS
-// (Used by both login.html and register.html)
-// =============================================
+    /*
+     * Change this filename if your dashboard
+     * has a different filename.
+     */
+    window.location.href = "dashboard.html";
+  }, 600);
+});
 
-// Show an error message under a specific form field
-function showAuthFieldError(inputId, errorId, message) {
-  var input = document.getElementById(inputId);
-  var errorEl = document.getElementById(errorId);
-  if (input) input.classList.add("input-error");
-  if (errorEl) errorEl.textContent = message;
-}
+/* ---------- Register ---------- */
 
-// Clear all errors from a list of input/error IDs
-function clearAuthErrors(inputIds, errorIds) {
-  inputIds.forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.remove("input-error");
-  });
-  errorIds.forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = "";
-  });
-}
+registerForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  clearRegisterErrors();
+
+  const fullName = regFullName.value.trim();
+  const username = normalizeUsername(
+    regUsername.value
+  );
+  const password = regPassword.value;
+  const confirmPassword = regConfirm.value;
+
+  let valid = true;
+
+  if (fullName.length < 2) {
+    setError(
+      regFullName,
+      document.getElementById("regFullNameError"),
+      "Please enter your full name."
+    );
+
+    valid = false;
+  }
+
+  if (!isValidUsername(username)) {
+    setError(
+      regUsername,
+      document.getElementById("regUsernameError"),
+      "Use 3–20 letters, numbers, or underscores."
+    );
+
+    valid = false;
+  }
+
+  if (password.length < 6) {
+    setError(
+      regPassword,
+      document.getElementById("regPasswordError"),
+      "Password must contain at least 6 characters."
+    );
+
+    valid = false;
+  }
+
+  if (confirmPassword !== password) {
+    setError(
+      regConfirm,
+      document.getElementById("regConfirmError"),
+      "Passwords do not match."
+    );
+
+    valid = false;
+  }
+
+  if (!valid) return;
+
+  const users = getUsers();
+
+  const existingUser = users.find(
+    user => user.username === username
+  );
+
+  if (existingUser) {
+    setError(
+      regUsername,
+      document.getElementById("regUsernameError"),
+      "This username is already registered."
+    );
+
+    return;
+  }
+
+  registerSubmitBtn.classList.add("loading");
+
+  setTimeout(() => {
+    const newUser = {
+      id:
+        Date.now().toString() +
+        Math.random().toString(36).slice(2),
+
+      fullName,
+      username,
+      password,
+
+      createdAt: new Date().toISOString()
+    };
+
+    users.push(newUser);
+
+    saveUsers(users);
+
+    registerSubmitBtn.classList.remove(
+      "loading"
+    );
+
+    registerForm.reset();
+
+    updatePasswordStrength("");
+
+    showToast(
+      "Account created successfully!"
+    );
+
+    setTimeout(() => {
+      loginUsername.value = username;
+      loginPassword.focus();
+      showLogin();
+    }, 500);
+  }, 600);
+});
+
+/* ---------- Demo Login ---------- */
+
+fillDemo.addEventListener("click", function () {
+  const users = getUsers();
+
+  const demoUsername = "demo_student";
+  const demoPassword = "demo123";
+
+  const exists = users.some(
+    user => user.username === demoUsername
+  );
+
+  if (!exists) {
+    users.push({
+      id: "demo-user",
+      fullName: "Demo Student",
+      username: demoUsername,
+      password: demoPassword,
+      createdAt: new Date().toISOString()
+    });
+
+    saveUsers(users);
+  }
+
+  loginUsername.value = demoUsername;
+  loginPassword.value = demoPassword;
+
+  showLogin();
+
+  showToast(
+    "Demo login details filled in."
+  );
+});
+
+/* ---------- Remembered Username ---------- */
+
+document.addEventListener("DOMContentLoaded", function () {
+  const rememberedUsername =
+    localStorage.getItem(
+      REMEMBERED_USER_KEY
+    );
+
+  if (rememberedUsername) {
+    loginUsername.value = rememberedUsername;
+    rememberMe.checked = true;
+  }
+
+  const currentUser = getCurrentUser();
+
+  /*
+   * If already logged in, don't force the user
+   * to log in again.
+   */
+  if (currentUser) {
+    // Uncomment if you want automatic redirect:
+    // window.location.href = "dashboard.html";
+  }
+});
