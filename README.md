@@ -61,7 +61,23 @@ My Full name is: <b>Syed Naqi Abbas Rizvi</b>
 <br>
 My Roll no: 491142
 <br> <br>
+<h1>About Me 👤</h1>
 
+Hi, Assalamualaikum, I'm Muhammad Hamza and I am learning vibe coding from Bano Qabil.
+
+<br><br>
+
+My Full name is: <b>Muhammad Hamza</b>
+
+<br>
+
+My Roll no: 523813
+
+<br>
+
+I am Syed Naqi's group partner, and we are working together as a team.
+
+<br><br>
 ⚡ Feature Showcase
 
 <table>
